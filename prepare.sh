@@ -76,7 +76,7 @@ then
     echo -e "x\nz\nY\nY\n" | gdisk /dev/${dev} > /dev/null
     echo -e echo -e "o\nY\nn\n\n\n+500M\nef00\n\nn\n\n\n+2560K\n\nn\n\n\n\n\n\nw\nY\n" \
         | gdisk /dev/${dev} > /dev/null
-    mkfs.vfat /dev/${dev}1
+    mkfs.vfat /dev/${dev}p1
 else
     dd if=/dev/zero of=/dev/${dev} bs=1M count=15 || true
     echo -e "o\nn\np\n\n\n+500M\n\nn\np\n\n\n+2560K\n\nn\np\n\n\n\n\na\n1\nw\n" \
@@ -84,21 +84,21 @@ else
     mkfs.ext4 -L boot /dev/${dev}1
 fi
 
-dd if=/dev/urandom of=/dev/${dev}2 || true
+dd if=/dev/urandom of=/dev/${dev}p2 || true
 
-cryptsetup luksFormat /dev/${dev}2
-cryptsetup luksOpen   /dev/${dev}2 key
+cryptsetup luksFormat /dev/${dev}p2
+cryptsetup luksOpen   /dev/${dev}p2 key
 
 dd if=/dev/urandom of=/dev/mapper/key || true
 
-cryptsetup -y luksFormat --key-file=/dev/mapper/key /dev/${dev}3
-cryptsetup    luksOpen   --key-file=/dev/mapper/key /dev/${dev}3 system
+cryptsetup -y luksFormat --key-file=/dev/mapper/key /dev/${dev}p3
+cryptsetup    luksOpen   --key-file=/dev/mapper/key /dev/${dev}p3 system
 
 mkfs.btrfs -L system /dev/mapper/system
 mount /dev/mapper/system /mnt
 
 mkdir /mnt/boot
-mount /dev/${dev}1 /mnt/boot
+mount /dev/${dev}p1 /mnt/boot
 
 
 nixos-generate-config --root /mnt
@@ -136,11 +136,11 @@ in {
     initrd.luks.devices = [
       {
         name = "key";
-        device = "/dev/disk/by-uuid/$(uuid_of "/dev/${dev}2")";
+        device = "/dev/disk/by-uuid/$(uuid_of "/dev/${dev}p2")";
       }
       {
         name = "system";
-        device = "/dev/disk/by-uuid/$(uuid_of "/dev/${dev}3")";
+        device = "/dev/disk/by-uuid/$(uuid_of "/dev/${dev}p3")";
         keyFile = "/dev/mapper/key";
       }
     ];
@@ -153,7 +153,7 @@ in {
     fsType = "btrfs";
   };
   fileSystems."/boot" = {
-    device = "/dev/disk/by-uuid/$(uuid_of "/dev/${dev}1")";
+    device = "/dev/disk/by-uuid/$(uuid_of "/dev/${dev}p1")";
     fsType = "${boot_fs}";
   };
 
