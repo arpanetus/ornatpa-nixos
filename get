@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+set -e
+
+printf "Got github URL:\n"
+printf $1
+
+printf "\nCreating a directory: /tmp/fake-git\n"
+mkdir -p /tmp/fake-git
+
+printf "Downloading...\n"
+curl -Ls "$1/archive/master.zip/" --output /tmp/fake-git/master.zip
+
+printf ".zip is ready\n"
+
+folder=$(pwd)/$(basename $1)-master/
+
+printf "preparing to save under: $folder\n"
+
+if [ -d "$folder" ]; then
+	printf "replacing older directory...\n"
+	rm -rf "$folder"
+fi
+
+printf "unzipping .zip file...\n"
+unzip -qq /tmp/fake-git/master.zip
+
+printf "folder is ready\nremoving tmp files...\n"
+
+rm -rf /tmp/fake-git
+
+printf "success\n"
