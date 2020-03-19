@@ -74,12 +74,12 @@ set -x
 if [ "$efi" = "true" ]
 then
     echo -e "x\nz\nY\nY\n" | gdisk /dev/${dev} > /dev/null
-    echo -e echo -e "o\nY\nn\n\n\n+500M\nef00\n\nn\n\n\n+2560K\n\nn\n\n\n\n\n\nw\nY\n" \
+    echo -e echo -e "o\nY\nn\n\n\n+512M\nef00\n\nn\n\n\n+3600K\n\nn\n\n\n\n\n\nw\nY\n" \
         | gdisk /dev/${dev} > /dev/null
     mkfs.vfat /dev/${dev}p1
 else
     dd if=/dev/zero of=/dev/${dev} bs=1M count=15 || true
-    echo -e "o\nn\np\n\n\n+500M\n\nn\np\n\n\n+2560K\n\nn\np\n\n\n\n\na\n1\nw\n" \
+    echo -e "o\nn\np\n\n\n+512M\n\nn\np\n\n\n+3600K\n\nn\np\n\n\n\n\na\n1\nw\n" \
         | fdisk /dev/${dev} > /dev/null
     mkfs.ext4 -L boot /dev/${dev}p1
 fi
