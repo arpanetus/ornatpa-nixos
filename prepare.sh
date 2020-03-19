@@ -81,7 +81,7 @@ else
     dd if=/dev/zero of=/dev/${dev} bs=1M count=15 || true
     echo -e "o\nn\np\n\n\n+500M\n\nn\np\n\n\n+2560K\n\nn\np\n\n\n\n\na\n1\nw\n" \
         | fdisk /dev/${dev} > /dev/null
-    mkfs.ext4 -L boot /dev/${dev}1
+    mkfs.ext4 -L boot /dev/${dev}p1
 fi
 
 dd if=/dev/urandom of=/dev/${dev}p2 || true
