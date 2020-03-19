@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
-dev=sda
+dev=nvme0n1
 efi=true
 boot_fs=vfat
 state_version="19.09"
